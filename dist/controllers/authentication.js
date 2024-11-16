@@ -40,7 +40,7 @@ exports.registerUser = registerUser;
 const loginUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
     try {
-        const foundUser = yield users_1.UserModel.findOne({ email });
+        const foundUser = yield users_1.UserModel.findOne({ email }).select('+password');
         if (!foundUser)
             throw new errorHandler_1.CustomError('Account Not Found', 401);
         const isPasswordValid = yield foundUser.comparePassword(password);

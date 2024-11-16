@@ -45,7 +45,7 @@ export const loginUser = async (
   const { email, password } = req.body
 
   try {
-    const foundUser = await UserModel.findOne({ email })
+    const foundUser = await UserModel.findOne({ email }).select('+password')
 
     if (!foundUser) throw new CustomError('Account Not Found', 401)
 
