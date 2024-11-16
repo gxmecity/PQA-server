@@ -1,13 +1,13 @@
-import express from 'express'
+import express, { Response, Request } from 'express'
 import http from 'http'
 import bodyParser from 'body-parser'
 import compression from 'compression'
 import cors from 'cors'
-import router from './src/routes'
+import router from './routes'
 import dotenv from 'dotenv'
-import ErrorHandler from './src/middlewares/errorHandler'
-import successHandler from './src/middlewares/successHandler'
-import { dbConnect } from './src/config/dbConect'
+import ErrorHandler from './middlewares/errorHandler'
+import successHandler from './middlewares/successHandler'
+import { dbConnect } from './config/dbConect'
 
 dotenv.config()
 
