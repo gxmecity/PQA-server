@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { Router, Request, Response } from 'express'
 
 import { authMiddleware } from '../middlewares/authentication'
 import {
@@ -18,4 +18,8 @@ export default (router: Router) => {
   router.post('/auth/team/register', upload.single('image'), registerTeam)
   router.patch('/auth/team/update/:id', updateTeamInfo)
   router.patch('/auth/team/update-sigil/:id', updateTeamSigil)
+
+  router.get('/testing', (req: Request, res: Response) => {
+    res.success('Working')
+  })
 }
