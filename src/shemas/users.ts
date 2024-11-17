@@ -4,6 +4,7 @@ import { hash, genSaltSync, compare } from 'bcrypt'
 
 interface IUser {
   fullname: string
+  profile_img: string
   email: string
   password: string
   role: string
@@ -24,10 +25,14 @@ const usersSchema: Schema<IUserModel> = new Schema(
       required: true,
       unique: true,
     },
+
     password: {
       type: String,
       required: true,
       select: false,
+    },
+    profile_img: {
+      type: String,
     },
     role: {
       type: String,
