@@ -19,26 +19,19 @@ export default (router: Router) => {
   router.get('/quiz', getAllPublishedQuizList)
   router.get('/quiz/:id', getQuizDetailsById)
 
-  router.get('/quiz/my-quiz', authMiddleware, getUsersQuizList)
-  router.post('/quiz/my-quiz', authMiddleware, createNewQuiz)
-  router.get('/quiz/my-quiz/:id', authMiddleware, getUserQuizDetailsById)
-  router.patch('/quiz/my-quiz/:id', authMiddleware, updateQuizDetails)
-  router.delete('/quiz/my-quiz/:id', authMiddleware, deleteQuiz)
+  router.get('/my-quiz', authMiddleware, getUsersQuizList)
+  router.post('/my-quiz', authMiddleware, createNewQuiz)
 
-  router.post('/quiz/my-quiz/:id/round', authMiddleware, addNewQuizRound)
-  router.patch(
-    '/quiz/my-quiz/:id/round/:round_id',
-    authMiddleware,
-    updateQuizRound
-  )
-  router.delete(
-    '/quiz/my-quiz/:id/round/:round_id',
-    authMiddleware,
-    deleteQuizRound
-  )
+  router.get('/my-quiz/:id', authMiddleware, getUserQuizDetailsById)
+  router.patch('/my-quiz/:id', authMiddleware, updateQuizDetails)
+  router.delete('/my-quiz/:id', authMiddleware, deleteQuiz)
+
+  router.post('/my-quiz/:id/round', authMiddleware, addNewQuizRound)
+  router.patch('/my-quiz/:id/round/:round_id', authMiddleware, updateQuizRound)
+  router.delete('/my-quiz/:id/round/:round_id', authMiddleware, deleteQuizRound)
 
   router.post(
-    '/quiz/upload',
+    '/quiz-questions/upload',
     authMiddleware,
     upload.single('file'),
     uploadedQuestionsCSV
