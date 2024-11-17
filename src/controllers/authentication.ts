@@ -184,6 +184,22 @@ export const deleteUser = async (
   }
 }
 
+export const getUserDetails = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id } = req.params
+
+  try {
+    const foundUser = await UserModel.findById(id)
+
+    res.success({ user: foundUser })
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const retrieveSession = async (
   req: Request,
   res: Response,

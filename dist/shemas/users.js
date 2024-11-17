@@ -27,6 +27,9 @@ const usersSchema = new mongoose_1.Schema({
         required: true,
         select: false,
     },
+    profile_img: {
+        type: String,
+    },
     role: {
         type: String,
         enum: ['single_player', 'quiz_master'],

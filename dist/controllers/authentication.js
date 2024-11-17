@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.retrieveSession = exports.deleteUser = exports.updateUser = exports.updateTeamSigil = exports.updateTeamInfo = exports.registerTeam = exports.loginUser = exports.registerUser = void 0;
+exports.retrieveSession = exports.getUserDetails = exports.deleteUser = exports.updateUser = exports.updateTeamSigil = exports.updateTeamInfo = exports.registerTeam = exports.loginUser = exports.registerUser = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const errorHandler_1 = require("../middlewares/errorHandler");
 const users_1 = require("../shemas/users");
@@ -140,6 +140,17 @@ const deleteUser = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.deleteUser = deleteUser;
+const getUserDetails = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    try {
+        const foundUser = yield users_1.UserModel.findById(id);
+        res.success({ user: foundUser });
+    }
+    catch (error) {
+        next(error);
+    }
+});
+exports.getUserDetails = getUserDetails;
 const retrieveSession = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const token = (_a = req.header('Authorization')) === null || _a === void 0 ? void 0 : _a.replace('Bearer ', '');
