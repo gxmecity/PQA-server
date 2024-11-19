@@ -49,9 +49,9 @@ const ScoreSchema = new mongoose_1.Schema({
 });
 const QuizEventSchema = new mongoose_1.Schema({
     title: { type: String, required: true },
-    host_entry_code: { type: String, required: true },
-    entry_code: { type: String, required: true },
-    quiz: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Quiz', required: true },
+    host_entry_code: { type: String },
+    entry_code: { type: String },
+    quiz: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Quiz' },
     scheduled_date: { type: Date },
     creator: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User' },
     leaderboard: { type: [ScoreSchema], default: [] },

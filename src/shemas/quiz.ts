@@ -113,9 +113,9 @@ const ScoreSchema: Schema<Score> = new Schema({
 
 const QuizEventSchema: Schema<QuizEvent> = new Schema({
   title: { type: String, required: true },
-  host_entry_code: { type: String, required: true },
-  entry_code: { type: String, required: true },
-  quiz: { type: Schema.Types.ObjectId, ref: 'Quiz', required: true },
+  host_entry_code: { type: String },
+  entry_code: { type: String },
+  quiz: { type: Schema.Types.ObjectId, ref: 'Quiz' },
   scheduled_date: { type: Date },
   creator: { type: Schema.Types.ObjectId, ref: 'User' },
   leaderboard: { type: [ScoreSchema], default: [] },
