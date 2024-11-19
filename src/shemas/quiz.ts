@@ -54,6 +54,7 @@ interface QuizEvent {
   scheduled_date?: Date
   leaderboard: Score[]
   creator: Schema.Types.ObjectId
+  finished: boolean
 }
 
 interface QuizSeries {
@@ -93,14 +94,19 @@ const RoundSchema: Schema<Round> = new Schema({
   timer: { type: Number, required: true },
 })
 
-const QuizSchema: Schema<Quiz> = new Schema({
-  description: { type: String },
-  creator: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  publish: { type: Boolean, default: false },
-  plays: { type: Number, default: 0 },
-  title: { type: String, required: true },
-  rounds: { type: [RoundSchema], default: [] },
-})
+const QuizSchema: Schema<Quiz> = new Schema(
+  {
+    description: { type: String },
+    creator: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    publish: { type: Boolean, default: false },
+    plays: { type: Number, default: 0 },
+    title: { type: String, required: true },
+    rounds: { type: [RoundSchema], default: [] },
+  },
+  {
+    timestamps: true,
+  }
+)
 
 const ScoreSchema: Schema<Score> = new Schema({
   player: {
@@ -111,21 +117,32 @@ const ScoreSchema: Schema<Score> = new Schema({
   score: { type: Number, default: 0 },
 })
 
-const QuizEventSchema: Schema<QuizEvent> = new Schema({
-  title: { type: String, required: true },
-  host_entry_code: { type: String },
-  entry_code: { type: String },
-  quiz: { type: Schema.Types.ObjectId, ref: 'Quiz' },
-  scheduled_date: { type: Date },
-  creator: { type: Schema.Types.ObjectId, ref: 'User' },
-  leaderboard: { type: [ScoreSchema], default: [] },
-})
+const QuizEventSchema: Schema<QuizEvent> = new Schema(
+  {
+    title: { type: String, required: true },
+    host_entry_code: { type: String },
+    entry_code: { type: String },
+    quiz: { type: Schema.Types.ObjectId, ref: 'Quiz' },
+    scheduled_date: { type: Date },
+    finished: { type: Boolean, default: false },
+    creator: { type: Schema.Types.ObjectId, ref: 'User' },
+    leaderboard: { type: [ScoreSchema], default: [] },
+  },
+  {
+    timestamps: true,
+  }
+)
 
-const QuizSeriesSchema: Schema<QuizSeries> = new Schema({
-  title: { type: String, required: true },
-  creator: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  events: [{ type: Schema.Types.ObjectId, ref: 'QuizEvent', required: true }],
-})
+const QuizSeriesSchema: Schema<QuizSeries> = new Schema(
+  {
+    title: { type: String, required: true },
+    creator: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    events: [{ type: Schema.Types.ObjectId, ref: 'QuizEvent', default: [] }],
+  },
+  {
+    timestamps: true,
+  }
+)
 
 export const QuizModel = model('Quiz', QuizSchema)
 export const QuizEventModel = model('QuizEvent', QuizEventSchema)

@@ -34,9 +34,9 @@ export const getAllUsersEvent = async (
   const { id } = req.params
 
   try {
-    const userEvents = await QuizEventModel.find({ creator: id }).select(
-      '-host_entry_code, -entry_code, -leaderboard'
-    )
+    const userEvents = await QuizEventModel.find({ creator: id })
+      .populate('creator')
+      .select('-host_entry_code, -entry_code, -leaderboard')
 
     res.success(userEvents, 'User Created Events')
   } catch (error) {
@@ -52,9 +52,9 @@ export const getQuizEventById = async (
   const { id } = req.params
 
   try {
-    const event = await QuizEventModel.findById(id).select(
-      '-host_entry_code, -entry_code'
-    )
+    const event = await QuizEventModel.findById(id)
+      .populate('creator')
+      .select('-host_entry_code, -entry_code')
 
     res.success(event, 'Quiz Event Details')
   } catch (error) {

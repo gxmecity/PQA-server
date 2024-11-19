@@ -33,7 +33,9 @@ exports.createNewQuizEvent = createNewQuizEvent;
 const getAllUsersEvent = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
-        const userEvents = yield quiz_1.QuizEventModel.find({ creator: id }).select('-host_entry_code, -entry_code, -leaderboard');
+        const userEvents = yield quiz_1.QuizEventModel.find({ creator: id })
+            .populate('creator')
+            .select('-host_entry_code, -entry_code, -leaderboard');
         res.success(userEvents, 'User Created Events');
     }
     catch (error) {
@@ -44,7 +46,9 @@ exports.getAllUsersEvent = getAllUsersEvent;
 const getQuizEventById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
-        const event = yield quiz_1.QuizEventModel.findById(id).select('-host_entry_code, -entry_code');
+        const event = yield quiz_1.QuizEventModel.findById(id)
+            .populate('creator')
+            .select('-host_entry_code, -entry_code');
         res.success(event, 'Quiz Event Details');
     }
     catch (error) {

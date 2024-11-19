@@ -38,6 +38,8 @@ const QuizSchema = new mongoose_1.Schema({
     plays: { type: Number, default: 0 },
     title: { type: String, required: true },
     rounds: { type: [RoundSchema], default: [] },
+}, {
+    timestamps: true,
 });
 const ScoreSchema = new mongoose_1.Schema({
     player: {
@@ -53,13 +55,18 @@ const QuizEventSchema = new mongoose_1.Schema({
     entry_code: { type: String },
     quiz: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Quiz' },
     scheduled_date: { type: Date },
+    finished: { type: Boolean, default: false },
     creator: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User' },
     leaderboard: { type: [ScoreSchema], default: [] },
+}, {
+    timestamps: true,
 });
 const QuizSeriesSchema = new mongoose_1.Schema({
     title: { type: String, required: true },
     creator: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User', required: true },
-    events: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'QuizEvent', required: true }],
+    events: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'QuizEvent', default: [] }],
+}, {
+    timestamps: true,
 });
 exports.QuizModel = (0, mongoose_1.model)('Quiz', QuizSchema);
 exports.QuizEventModel = (0, mongoose_1.model)('QuizEvent', QuizEventSchema);
