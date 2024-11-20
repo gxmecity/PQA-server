@@ -54,7 +54,10 @@ interface QuizEvent {
   scheduled_date?: Date
   leaderboard: Score[]
   creator: Schema.Types.ObjectId
-  finished: boolean
+  event_started: boolean
+  event_ended: boolean
+  activeRound: number
+  activeQuestion: number
 }
 
 interface QuizSeries {
@@ -124,9 +127,12 @@ const QuizEventSchema: Schema<QuizEvent> = new Schema(
     entry_code: { type: String },
     quiz: { type: Schema.Types.ObjectId, ref: 'Quiz' },
     scheduled_date: { type: Date },
-    finished: { type: Boolean, default: false },
+    event_ended: { type: Boolean, default: false },
     creator: { type: Schema.Types.ObjectId, ref: 'User' },
     leaderboard: { type: [ScoreSchema], default: [] },
+    event_started: { type: Boolean, default: false },
+    activeQuestion: { type: Number, default: 0 },
+    activeRound: { type: Number, default: 0 },
   },
   {
     timestamps: true,

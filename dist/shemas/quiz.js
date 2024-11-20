@@ -55,9 +55,12 @@ const QuizEventSchema = new mongoose_1.Schema({
     entry_code: { type: String },
     quiz: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Quiz' },
     scheduled_date: { type: Date },
-    finished: { type: Boolean, default: false },
+    event_ended: { type: Boolean, default: false },
     creator: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User' },
     leaderboard: { type: [ScoreSchema], default: [] },
+    event_started: { type: Boolean, default: false },
+    activeQuestion: { type: Number, default: 0 },
+    activeRound: { type: Number, default: 0 },
 }, {
     timestamps: true,
 });
