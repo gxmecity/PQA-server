@@ -122,8 +122,17 @@ exports.getTeamById = getTeamById;
 const updateTeamInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const details = req.body;
+    const file = req.file;
     try {
-        const updatedTeam = yield teams_1.TeamModel.findByIdAndUpdate(id, details, {
+        let asset = '';
+        if (file) {
+            const b64 = Buffer.from(req.file.buffer).toString('base64');
+            let dataURI = 'data:' + req.file.mimetype + ';base64,' + b64;
+            const cldRes = yield (0, cloudinary_1.handleUpload)(dataURI);
+            asset = cldRes.secure_url;
+        }
+        const infoToUpdate = file ? Object.assign(Object.assign({}, details), { sigil: asset }) : details;
+        const updatedTeam = yield teams_1.TeamModel.findByIdAndUpdate(id, infoToUpdate, {
             new: true,
         });
         res.success(updatedTeam, 'Team Updated Successfully');

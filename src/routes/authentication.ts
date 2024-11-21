@@ -22,8 +22,7 @@ export default (router: Router) => {
 
   router.get('/team/:id', getTeamById)
   router.post('/team/register', upload.single('image'), registerTeam)
-  router.patch('/team/update/:id', updateTeamInfo)
-  router.patch('/team/update-sigil/:id', updateTeamSigil)
+  router.patch('/team/update/:id', upload.single('image'), updateTeamInfo)
 
   router.get('/testing', (req: Request, res: Response) => {
     res.success('Working')

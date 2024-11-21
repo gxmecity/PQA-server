@@ -10,8 +10,7 @@ exports.default = (router) => {
     router.get('/teams/:id', authentication_2.getQuizMasterTeams);
     router.get('/team/:id', authentication_2.getTeamById);
     router.post('/team/register', multer_1.upload.single('image'), authentication_2.registerTeam);
-    router.patch('/team/update/:id', authentication_2.updateTeamInfo);
-    router.patch('/team/update-sigil/:id', authentication_2.updateTeamSigil);
+    router.patch('/team/update/:id', multer_1.upload.single('image'), authentication_2.updateTeamInfo);
     router.get('/testing', (req, res) => {
         res.success('Working');
     });

@@ -161,9 +161,21 @@ export const updateTeamInfo = async (
 ) => {
   const { id } = req.params
   const details = req.body
+  const file = req.file
 
   try {
-    const updatedTeam = await TeamModel.findByIdAndUpdate(id, details, {
+    let asset: string = ''
+
+    if (file) {
+      const b64 = Buffer.from(req.file.buffer).toString('base64')
+      let dataURI = 'data:' + req.file.mimetype + ';base64,' + b64
+      const cldRes = await handleUpload(dataURI)
+      asset = cldRes.secure_url
+    }
+
+    const infoToUpdate = file ? { ...details, sigil: asset } : details
+
+    const updatedTeam = await TeamModel.findByIdAndUpdate(id, infoToUpdate, {
       new: true,
     })
 
