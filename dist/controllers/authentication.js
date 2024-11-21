@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.retrieveSession = exports.getUserDetails = exports.deleteUser = exports.updateUser = exports.updateTeamSigil = exports.updateTeamInfo = exports.registerTeam = exports.loginUser = exports.registerUser = void 0;
+exports.retrieveSession = exports.getUserDetails = exports.deleteUser = exports.updateUser = exports.updateTeamSigil = exports.updateTeamInfo = exports.getTeamById = exports.getQuizMasterTeams = exports.registerTeam = exports.loginTeam = exports.loginUser = exports.registerUser = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const errorHandler_1 = require("../middlewares/errorHandler");
 const users_1 = require("../shemas/users");
@@ -56,6 +56,20 @@ const loginUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.loginUser = loginUser;
+const loginTeam = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id, passphrase } = req.body;
+    try {
+        const foundTeam = yield teams_1.TeamModel.findById(id).select('+passphrase');
+        const isPhraseValid = yield foundTeam.comparePassphrase(passphrase);
+        if (!isPhraseValid)
+            throw new errorHandler_1.CustomError('Invalid Passphrase', 401);
+        res.success(foundTeam, 'Logged In Successfully');
+    }
+    catch (error) {
+        next(error);
+    }
+});
+exports.loginTeam = loginTeam;
 const registerTeam = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, passphrase, team_members, quiz_master } = req.body;
     const file = req.file;
@@ -83,6 +97,28 @@ const registerTeam = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.registerTeam = registerTeam;
+const getQuizMasterTeams = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    try {
+        const teams = yield teams_1.TeamModel.find({ quiz_master: id });
+        res.success(teams);
+    }
+    catch (error) {
+        next(error);
+    }
+});
+exports.getQuizMasterTeams = getQuizMasterTeams;
+const getTeamById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    try {
+        const team = yield teams_1.TeamModel.findById(id).populate('quiz_master');
+        res.success(team, 'Team details');
+    }
+    catch (error) {
+        next(error);
+    }
+});
+exports.getTeamById = getTeamById;
 const updateTeamInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const details = req.body;

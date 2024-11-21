@@ -67,6 +67,26 @@ export const loginUser = async (
   }
 }
 
+export const loginTeam = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id, passphrase } = req.body
+
+  try {
+    const foundTeam = await TeamModel.findById(id).select('+passphrase')
+
+    const isPhraseValid = await foundTeam.comparePassphrase(passphrase)
+
+    if (!isPhraseValid) throw new CustomError('Invalid Passphrase', 401)
+
+    res.success(foundTeam, 'Logged In Successfully')
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const registerTeam = async (
   req: Request,
   res: Response,
@@ -97,6 +117,38 @@ export const registerTeam = async (
     })
 
     res.success(newTeam, 'Team Created Successfully')
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getQuizMasterTeams = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id } = req.params
+
+  try {
+    const teams = await TeamModel.find({ quiz_master: id })
+
+    res.success(teams)
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getTeamById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id } = req.params
+
+  try {
+    const team = await TeamModel.findById(id).populate('quiz_master')
+
+    res.success(team, 'Team details')
   } catch (error) {
     next(error)
   }
