@@ -5,7 +5,6 @@ import {
   registerUser,
   registerTeam,
   updateTeamInfo,
-  updateTeamSigil,
   loginUser,
   retrieveSession,
   getQuizMasterTeams,

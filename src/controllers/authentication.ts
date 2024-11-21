@@ -111,7 +111,7 @@ export const registerTeam = async (
     const newTeam = await TeamModel.create({
       name,
       passphrase,
-      team_members,
+      team_members: JSON.parse(team_members),
       quiz_master,
       sigil: asset,
     })
@@ -173,41 +173,19 @@ export const updateTeamInfo = async (
       asset = cldRes.secure_url
     }
 
-    const infoToUpdate = file ? { ...details, sigil: asset } : details
+    const infoToUpdate = file
+      ? {
+          ...details,
+          team_members: JSON.parse(details.team_members),
+          sigil: asset,
+        }
+      : details
 
     const updatedTeam = await TeamModel.findByIdAndUpdate(id, infoToUpdate, {
       new: true,
     })
 
     res.success(updatedTeam, 'Team Updated Successfully')
-  } catch (error) {
-    next(error)
-  }
-}
-
-export const updateTeamSigil = async (
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction
-) => {
-  const { id } = req.params
-  const file = req.file
-
-  try {
-    const b64 = Buffer.from(req.file.buffer).toString('base64')
-    let dataURI = 'data:' + req.file.mimetype + ';base64,' + b64
-    const cldRes = await handleUpload(dataURI)
-    const asset = cldRes.secure_url
-
-    const updatedTeam = await TeamModel.findByIdAndUpdate(
-      id,
-      { sigil: asset },
-      {
-        new: true,
-      }
-    )
-
-    res.success(updatedTeam, 'Sigil Updated Successfully')
   } catch (error) {
     next(error)
   }

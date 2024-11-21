@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.retrieveSession = exports.getUserDetails = exports.deleteUser = exports.updateUser = exports.updateTeamSigil = exports.updateTeamInfo = exports.getTeamById = exports.getQuizMasterTeams = exports.registerTeam = exports.loginTeam = exports.loginUser = exports.registerUser = void 0;
+exports.retrieveSession = exports.getUserDetails = exports.deleteUser = exports.updateUser = exports.updateTeamInfo = exports.getTeamById = exports.getQuizMasterTeams = exports.registerTeam = exports.loginTeam = exports.loginUser = exports.registerUser = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const errorHandler_1 = require("../middlewares/errorHandler");
 const users_1 = require("../shemas/users");
@@ -86,7 +86,7 @@ const registerTeam = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
         const newTeam = yield teams_1.TeamModel.create({
             name,
             passphrase,
-            team_members,
+            team_members: JSON.parse(team_members),
             quiz_master,
             sigil: asset,
         });
@@ -131,7 +131,8 @@ const updateTeamInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
             const cldRes = yield (0, cloudinary_1.handleUpload)(dataURI);
             asset = cldRes.secure_url;
         }
-        const infoToUpdate = file ? Object.assign(Object.assign({}, details), { sigil: asset }) : details;
+        const infoToUpdate = file
+            ? Object.assign(Object.assign({}, details), { team_members: JSON.parse(details.team_members), sigil: asset }) : details;
         const updatedTeam = yield teams_1.TeamModel.findByIdAndUpdate(id, infoToUpdate, {
             new: true,
         });
@@ -142,24 +143,6 @@ const updateTeamInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     }
 });
 exports.updateTeamInfo = updateTeamInfo;
-const updateTeamSigil = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
-    const file = req.file;
-    try {
-        const b64 = Buffer.from(req.file.buffer).toString('base64');
-        let dataURI = 'data:' + req.file.mimetype + ';base64,' + b64;
-        const cldRes = yield (0, cloudinary_1.handleUpload)(dataURI);
-        const asset = cldRes.secure_url;
-        const updatedTeam = yield teams_1.TeamModel.findByIdAndUpdate(id, { sigil: asset }, {
-            new: true,
-        });
-        res.success(updatedTeam, 'Sigil Updated Successfully');
-    }
-    catch (error) {
-        next(error);
-    }
-});
-exports.updateTeamSigil = updateTeamSigil;
 const updateUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user_id = req.user_id;
     const details = req.body;
