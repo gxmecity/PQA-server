@@ -92,28 +92,18 @@ export const registerTeam = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { name, passphrase, team_members, quiz_master } = req.body
-  const file = req.file
+  const { name, passphrase, team_members, quiz_master, sigil } = req.body
 
   try {
     if (!name || !passphrase || !quiz_master)
       throw new CustomError('Invalid Credentials', 400)
-
-    let asset: string = ''
-
-    if (file) {
-      const b64 = Buffer.from(req.file.buffer).toString('base64')
-      let dataURI = 'data:' + req.file.mimetype + ';base64,' + b64
-      const cldRes = await handleUpload(dataURI)
-      asset = cldRes.secure_url
-    }
 
     const newTeam = await TeamModel.create({
       name,
       passphrase,
       team_members: JSON.parse(team_members),
       quiz_master,
-      sigil: asset,
+      sigil,
     })
 
     res.success(newTeam, 'Team Created Successfully')
@@ -161,25 +151,12 @@ export const updateTeamInfo = async (
 ) => {
   const { id } = req.params
   const details = req.body
-  const file = req.file
 
   try {
-    let asset: string = ''
-
-    if (file) {
-      const b64 = Buffer.from(req.file.buffer).toString('base64')
-      let dataURI = 'data:' + req.file.mimetype + ';base64,' + b64
-      const cldRes = await handleUpload(dataURI)
-      asset = cldRes.secure_url
+    const infoToUpdate = {
+      ...details,
+      team_members: JSON.parse(details.team_members),
     }
-
-    const infoToUpdate = file
-      ? {
-          ...details,
-          team_members: JSON.parse(details.team_members),
-          sigil: asset,
-        }
-      : details
 
     const updatedTeam = await TeamModel.findByIdAndUpdate(id, infoToUpdate, {
       new: true,

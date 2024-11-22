@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getLeaderboardForSeries = exports.deleteQuizSeries = exports.updateQuizSeries = exports.getQuizSeriesById = exports.getAllUsersSeries = exports.createNewQuizSeries = exports.deleteQuizEvent = exports.updateQuizEvent = exports.getQuizEventById = exports.getAllUsersEvent = exports.createNewQuizEvent = void 0;
+exports.getLeaderboardForSeries = exports.deleteQuizSeries = exports.updateQuizSeries = exports.getQuizSeriesById = exports.getAllUsersSeries = exports.createNewQuizSeries = exports.deleteQuizEvent = exports.updateQuizEvent = exports.getQuizEventByEntryId = exports.getQuizEventByHostId = exports.getQuizEventById = exports.getAllUsersEvent = exports.createNewQuizEvent = void 0;
 const quiz_1 = require("../shemas/quiz");
 const createNewQuizEvent = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user_id;
@@ -56,6 +56,32 @@ const getQuizEventById = (req, res, next) => __awaiter(void 0, void 0, void 0, f
     }
 });
 exports.getQuizEventById = getQuizEventById;
+const getQuizEventByHostId = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    try {
+        const event = yield quiz_1.QuizEventModel.findOne({
+            host_entry_code: id,
+        }).populate('creator');
+        res.success(event, 'Quiz Event Details');
+    }
+    catch (error) {
+        next(error);
+    }
+});
+exports.getQuizEventByHostId = getQuizEventByHostId;
+const getQuizEventByEntryId = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    try {
+        const event = yield quiz_1.QuizEventModel.findOne({
+            entry_code: id,
+        }).populate('creator');
+        res.success(event, 'Quiz Event Details');
+    }
+    catch (error) {
+        next(error);
+    }
+});
+exports.getQuizEventByEntryId = getQuizEventByEntryId;
 const updateQuizEvent = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const details = req.body;

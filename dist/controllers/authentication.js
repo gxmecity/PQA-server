@@ -16,7 +16,6 @@ exports.retrieveSession = exports.getUserDetails = exports.deleteUser = exports.
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const errorHandler_1 = require("../middlewares/errorHandler");
 const users_1 = require("../shemas/users");
-const cloudinary_1 = require("../lib/cloudinary");
 const teams_1 = require("../shemas/teams");
 const registerUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -71,24 +70,16 @@ const loginTeam = (req, res, next) => __awaiter(void 0, void 0, void 0, function
 });
 exports.loginTeam = loginTeam;
 const registerTeam = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name, passphrase, team_members, quiz_master } = req.body;
-    const file = req.file;
+    const { name, passphrase, team_members, quiz_master, sigil } = req.body;
     try {
         if (!name || !passphrase || !quiz_master)
             throw new errorHandler_1.CustomError('Invalid Credentials', 400);
-        let asset = '';
-        if (file) {
-            const b64 = Buffer.from(req.file.buffer).toString('base64');
-            let dataURI = 'data:' + req.file.mimetype + ';base64,' + b64;
-            const cldRes = yield (0, cloudinary_1.handleUpload)(dataURI);
-            asset = cldRes.secure_url;
-        }
         const newTeam = yield teams_1.TeamModel.create({
             name,
             passphrase,
             team_members: JSON.parse(team_members),
             quiz_master,
-            sigil: asset,
+            sigil,
         });
         res.success(newTeam, 'Team Created Successfully');
     }
@@ -122,17 +113,8 @@ exports.getTeamById = getTeamById;
 const updateTeamInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const details = req.body;
-    const file = req.file;
     try {
-        let asset = '';
-        if (file) {
-            const b64 = Buffer.from(req.file.buffer).toString('base64');
-            let dataURI = 'data:' + req.file.mimetype + ';base64,' + b64;
-            const cldRes = yield (0, cloudinary_1.handleUpload)(dataURI);
-            asset = cldRes.secure_url;
-        }
-        const infoToUpdate = file
-            ? Object.assign(Object.assign({}, details), { team_members: JSON.parse(details.team_members), sigil: asset }) : details;
+        const infoToUpdate = Object.assign(Object.assign({}, details), { team_members: JSON.parse(details.team_members) });
         const updatedTeam = yield teams_1.TeamModel.findByIdAndUpdate(id, infoToUpdate, {
             new: true,
         });

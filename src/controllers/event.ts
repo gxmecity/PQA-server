@@ -62,6 +62,42 @@ export const getQuizEventById = async (
   }
 }
 
+export const getQuizEventByHostId = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id } = req.params
+
+  try {
+    const event = await QuizEventModel.findOne({
+      host_entry_code: id,
+    }).populate('creator')
+
+    res.success(event, 'Quiz Event Details')
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getQuizEventByEntryId = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id } = req.params
+
+  try {
+    const event = await QuizEventModel.findOne({
+      entry_code: id,
+    }).populate('creator')
+
+    res.success(event, 'Quiz Event Details')
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const updateQuizEvent = async (
   req: AuthenticatedRequest,
   res: Response,

@@ -34,7 +34,7 @@ const teamsSchema: Schema<ITeamModel> = new Schema(
 )
 
 function teamMemberLength(val: string[]) {
-  return val.length < 2
+  return val.length > 2
 }
 
 teamsSchema.pre('save', async function (next: NextFunction) {

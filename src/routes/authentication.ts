@@ -10,7 +10,6 @@ import {
   getQuizMasterTeams,
   getTeamById,
 } from '../controllers/authentication'
-import { upload } from '../middlewares/multer'
 
 export default (router: Router) => {
   router.post('/auth/signup', registerUser)
@@ -20,10 +19,6 @@ export default (router: Router) => {
   router.get('/teams/:id', getQuizMasterTeams)
 
   router.get('/team/:id', getTeamById)
-  router.post('/team/register', upload.single('image'), registerTeam)
-  router.patch('/team/update/:id', upload.single('image'), updateTeamInfo)
-
-  router.get('/testing', (req: Request, res: Response) => {
-    res.success('Working')
-  })
+  router.post('/team/register', registerTeam)
+  router.patch('/team/update/:id', updateTeamInfo)
 }

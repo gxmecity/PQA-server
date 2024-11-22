@@ -27,7 +27,7 @@ const teamsSchema = new mongoose_1.Schema({
     timestamps: true,
 });
 function teamMemberLength(val) {
-    return val.length < 2;
+    return val.length > 2;
 }
 teamsSchema.pre('save', function (next) {
     return __awaiter(this, void 0, void 0, function* () {

@@ -8,6 +8,8 @@ import {
   getAllUsersEvent,
   getAllUsersSeries,
   getLeaderboardForSeries,
+  getQuizEventByEntryId,
+  getQuizEventByHostId,
   getQuizEventById,
   getQuizSeriesById,
   updateQuizEvent,
@@ -17,6 +19,9 @@ import {
 export default (router: Router) => {
   router.get('/events/:id', getAllUsersEvent)
   router.get('/events/event/:id', getQuizEventById)
+
+  router.get('/play/host/:id', getQuizEventByHostId)
+  router.get('/play/guest/:id', getQuizEventByEntryId)
 
   router.post('/events', authMiddleware, createNewQuizEvent)
   router.patch('/events/event/:id', authMiddleware, updateQuizEvent)
