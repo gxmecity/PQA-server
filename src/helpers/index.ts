@@ -6,3 +6,6 @@ export function generateSlug(name: string): string {
     .replace(/\s+/g, '-')
     .replace(/--+/g, '-')
 }
+export const uniqueId = function () {
+  return 'id-' + Math.random().toString(36).substr(2, 16)
+}
