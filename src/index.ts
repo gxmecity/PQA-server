@@ -45,7 +45,7 @@ app.use(successHandler)
 
 app.use('/api', router())
 
-app.get('/realtime-auth', async (request, response) => {
+app.get('/api/realtime-auth', async (request, response) => {
   try {
     const tokenParams = { clientId: uniqueId() }
     const tokenRequest = await realtime.auth.createTokenRequest(tokenParams)

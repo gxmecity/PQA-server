@@ -44,7 +44,7 @@ server.listen(5000, () => {
 });
 app.use(successHandler_1.default);
 app.use('/api', (0, routes_1.default)());
-app.get('/realtime-auth', (request, response) => __awaiter(void 0, void 0, void 0, function* () {
+app.get('/api/realtime-auth', (request, response) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const tokenParams = { clientId: (0, helpers_1.uniqueId)() };
         const tokenRequest = yield realtime.auth.createTokenRequest(tokenParams);
