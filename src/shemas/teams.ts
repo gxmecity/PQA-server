@@ -26,7 +26,7 @@ const teamsSchema: Schema<ITeamModel> = new Schema(
       type: [{ type: String }],
       validate: [teamMemberLength, '{PATH} must have at least 2 members'],
     },
-    passphrase: { typr: String },
+    passphrase: { type: String },
   },
   {
     timestamps: true,
