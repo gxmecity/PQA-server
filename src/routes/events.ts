@@ -15,6 +15,7 @@ import {
   updateQuizEvent,
   updateQuizSeries,
 } from '../controllers/event'
+import { loginTeam } from '../controllers/authentication'
 
 export default (router: Router) => {
   router.get('/events/:id', getAllUsersEvent)
@@ -23,6 +24,7 @@ export default (router: Router) => {
   router.get('/play/host/:id', getQuizEventByHostId)
   router.get('/play/guest/:id', getQuizEventByEntryId)
 
+  router.post('/event/team-join', loginTeam)
   router.post('/events', authMiddleware, createNewQuizEvent)
   router.patch('/events/event/:id', authMiddleware, updateQuizEvent)
   router.delete('/events/event/:id', authMiddleware, deleteQuizEvent)

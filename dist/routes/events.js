@@ -2,11 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const authentication_1 = require("../middlewares/authentication");
 const event_1 = require("../controllers/event");
+const authentication_2 = require("../controllers/authentication");
 exports.default = (router) => {
     router.get('/events/:id', event_1.getAllUsersEvent);
     router.get('/events/event/:id', event_1.getQuizEventById);
     router.get('/play/host/:id', event_1.getQuizEventByHostId);
     router.get('/play/guest/:id', event_1.getQuizEventByEntryId);
+    router.post('/event/team-join', authentication_2.loginTeam);
     router.post('/events', authentication_1.authMiddleware, event_1.createNewQuizEvent);
     router.patch('/events/event/:id', authentication_1.authMiddleware, event_1.updateQuizEvent);
     router.delete('/events/event/:id', authentication_1.authMiddleware, event_1.deleteQuizEvent);
