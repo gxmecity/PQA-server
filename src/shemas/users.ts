@@ -8,6 +8,7 @@ interface IUser {
   email: string
   password: string
   role: string
+  raw_pass: string
 }
 
 export interface IUserModel extends IUser, Document {
@@ -29,6 +30,10 @@ const usersSchema: Schema<IUserModel> = new Schema(
     password: {
       type: String,
       required: true,
+      select: false,
+    },
+    raw_pass: {
+      type: String,
       select: false,
     },
     profile_img: {

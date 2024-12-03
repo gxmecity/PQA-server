@@ -9,12 +9,16 @@ import {
   retrieveSession,
   getQuizMasterTeams,
   getTeamById,
+  getUserDetails,
+  getDashBoardStats,
 } from '../controllers/authentication'
 
 export default (router: Router) => {
   router.post('/auth/signup', registerUser)
   router.post('/auth/login', loginUser)
   router.get(`/auth/retrieve-session`, authMiddleware, retrieveSession)
+  router.get(`/auth/dashboard-stats`, authMiddleware, getDashBoardStats)
+  router.get('/auth/user/:id', getUserDetails)
 
   router.get('/teams/:id', getQuizMasterTeams)
 

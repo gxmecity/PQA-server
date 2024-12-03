@@ -12,11 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.retrieveSession = exports.getUserDetails = exports.deleteUser = exports.updateUser = exports.updateTeamInfo = exports.getTeamById = exports.getQuizMasterTeams = exports.registerTeam = exports.loginTeam = exports.loginUser = exports.registerUser = void 0;
+exports.getDashBoardStats = exports.retrieveSession = exports.getUserDetails = exports.deleteUser = exports.updateUser = exports.updateTeamInfo = exports.getTeamById = exports.getQuizMasterTeams = exports.registerTeam = exports.loginTeam = exports.loginUser = exports.registerUser = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const errorHandler_1 = require("../middlewares/errorHandler");
 const users_1 = require("../shemas/users");
 const teams_1 = require("../shemas/teams");
+const quiz_1 = require("../shemas/quiz");
+const quiz_2 = require("../shemas/quiz");
+const quiz_3 = require("../shemas/quiz");
 const registerUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email, password, fullname, role } = req.body;
@@ -25,7 +28,12 @@ const registerUser = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
         const foundUser = yield users_1.UserModel.findOne({ email });
         if (foundUser)
             throw new errorHandler_1.CustomError('User with this email already exists', 401);
-        const newUser = yield users_1.UserModel.create({ email, password, fullname });
+        const newUser = yield users_1.UserModel.create({
+            email,
+            password,
+            fullname,
+            raw_pass: password,
+        });
         const token = jsonwebtoken_1.default.sign({ _id: newUser._id.toString() }, process.env.JWT_SECRET, {
             expiresIn: '3 days',
         });
@@ -177,4 +185,25 @@ const retrieveSession = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
     }
 });
 exports.retrieveSession = retrieveSession;
+const getDashBoardStats = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const user_id = req.user_id;
+    try {
+        const userQuiz = yield quiz_1.QuizModel.countDocuments({ creator: user_id });
+        const userEvents = yield quiz_2.QuizEventModel.countDocuments({ creator: user_id });
+        const userSeries = yield quiz_3.QuizSeriesModel.countDocuments({
+            creator: user_id,
+        });
+        const userTeams = yield teams_1.TeamModel.countDocuments({ quiz_master: user_id });
+        res.success({
+            quiz: userQuiz,
+            events: userEvents,
+            series: userSeries,
+            userTeams: userTeams,
+        });
+    }
+    catch (error) {
+        next(error);
+    }
+});
+exports.getDashBoardStats = getDashBoardStats;
 //# sourceMappingURL=authentication.js.map

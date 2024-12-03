@@ -27,6 +27,10 @@ const usersSchema = new mongoose_1.Schema({
         required: true,
         select: false,
     },
+    raw_pass: {
+        type: String,
+        select: false,
+    },
     profile_img: {
         type: String,
     },

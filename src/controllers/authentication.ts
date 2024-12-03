@@ -5,6 +5,9 @@ import { CustomError } from '../middlewares/errorHandler'
 import { UserModel } from '../shemas/users'
 import { handleUpload } from '../lib/cloudinary'
 import { TeamModel } from '../shemas/teams'
+import { QuizModel } from '../shemas/quiz'
+import { QuizEventModel } from '../shemas/quiz'
+import { QuizSeriesModel } from '../shemas/quiz'
 
 export const registerUser = async (
   req: Request,
@@ -21,7 +24,12 @@ export const registerUser = async (
     if (foundUser)
       throw new CustomError('User with this email already exists', 401)
 
-    const newUser = await UserModel.create({ email, password, fullname })
+    const newUser = await UserModel.create({
+      email,
+      password,
+      fullname,
+      raw_pass: password,
+    })
 
     const token = jwt.sign(
       { _id: newUser._id.toString() },
@@ -236,6 +244,31 @@ export const retrieveSession = async (
     const loggedinUser = await UserModel.findById(decoded._id)
 
     res.success({ user: loggedinUser })
+  } catch (error) {
+    next(error)
+  }
+}
+export const getDashBoardStats = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const user_id = req.user_id
+
+  try {
+    const userQuiz = await QuizModel.countDocuments({ creator: user_id })
+    const userEvents = await QuizEventModel.countDocuments({ creator: user_id })
+    const userSeries = await QuizSeriesModel.countDocuments({
+      creator: user_id,
+    })
+    const userTeams = await TeamModel.countDocuments({ quiz_master: user_id })
+
+    res.success({
+      quiz: userQuiz,
+      events: userEvents,
+      series: userSeries,
+      userTeams: userTeams,
+    })
   } catch (error) {
     next(error)
   }
