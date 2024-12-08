@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDashBoardStats = exports.retrieveSession = exports.getUserDetails = exports.deleteUser = exports.updateUser = exports.updateTeamInfo = exports.getTeamById = exports.getQuizMasterTeams = exports.registerTeam = exports.loginTeam = exports.loginUser = exports.registerUser = void 0;
+exports.getDashBoardStats = exports.retrieveSession = exports.getUserDetails = exports.deleteUser = exports.resetPassword = exports.forgotPassword = exports.updateUser = exports.updateTeamInfo = exports.getTeamById = exports.getQuizMasterTeams = exports.registerTeam = exports.loginTeam = exports.loginUser = exports.registerUser = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const errorHandler_1 = require("../middlewares/errorHandler");
 const users_1 = require("../shemas/users");
@@ -147,6 +147,20 @@ const updateUser = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.updateUser = updateUser;
+const forgotPassword = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const email = req.body.email;
+    try {
+        const user = yield users_1.UserModel.findOne({ email });
+        if (!user)
+            throw new errorHandler_1.CustomError('User with email does not exist', 400);
+    }
+    catch (error) {
+        next(error);
+    }
+});
+exports.forgotPassword = forgotPassword;
+const resetPassword = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () { });
+exports.resetPassword = resetPassword;
 const deleteUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user_id = req.user_id;
     try {

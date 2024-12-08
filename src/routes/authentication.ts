@@ -11,6 +11,7 @@ import {
   getTeamById,
   getUserDetails,
   getDashBoardStats,
+  updateUser,
 } from '../controllers/authentication'
 
 export default (router: Router) => {
@@ -19,6 +20,7 @@ export default (router: Router) => {
   router.get(`/auth/retrieve-session`, authMiddleware, retrieveSession)
   router.get(`/auth/dashboard-stats`, authMiddleware, getDashBoardStats)
   router.get('/auth/user/:id', getUserDetails)
+  router.patch('/auth/user/:id', authMiddleware, updateUser)
 
   router.get('/teams/:id', getQuizMasterTeams)
 

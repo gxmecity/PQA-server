@@ -195,6 +195,28 @@ export const updateUser = async (
   }
 }
 
+export const forgotPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const email = req.body.email
+
+  try {
+    const user = await UserModel.findOne({ email })
+
+    if (!user) throw new CustomError('User with email does not exist', 400)
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const resetPassword = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {}
+
 export const deleteUser = async (
   req: AuthenticatedRequest,
   res: Response,

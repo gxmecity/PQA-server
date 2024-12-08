@@ -19,6 +19,7 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@babel/preset-typescript": "^7.26.0",
     "@types/bcrypt": "^5.0.2",
     "@types/compression": "^1.7.5",
     "@types/cors": "^2.8.17",
@@ -30,6 +31,7 @@
     "typescript": "^5.6.3"
   },
   "dependencies": {
+    "@react-email/components": "^0.0.30",
     "ably": "^2.5.0",
     "bcrypt": "^5.1.1",
     "cloudinary": "^2.5.1",
@@ -42,6 +44,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.8.1",
     "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.16",
     "nodemon": "^3.1.7",
     "ts-node": "^10.9.2"
   }
