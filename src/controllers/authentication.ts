@@ -166,9 +166,14 @@ export const updateTeamInfo = async (
       team_members: JSON.parse(details.team_members),
     }
 
-    const updatedTeam = await TeamModel.findByIdAndUpdate(id, infoToUpdate, {
-      new: true,
-    })
+    const updatedTeam = await TeamModel.findByIdAndUpdate(
+      id,
+      { $set: infoToUpdate },
+      {
+        new: true,
+        runValidators: true,
+      }
+    )
 
     res.success(updatedTeam, 'Team Updated Successfully')
   } catch (error) {
@@ -185,9 +190,14 @@ export const updateUser = async (
   const details = req.body
 
   try {
-    const updatedUser = await UserModel.findByIdAndUpdate(user_id, details, {
-      new: true,
-    })
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      user_id,
+      { $set: details },
+      {
+        new: true,
+        runValidators: true,
+      }
+    )
 
     res.success(updatedUser, 'Account Updated Succesfully')
   } catch (error) {

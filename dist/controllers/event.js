@@ -86,7 +86,7 @@ const updateQuizEvent = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
     const { id } = req.params;
     const details = req.body;
     try {
-        const updatedEvent = yield quiz_1.QuizEventModel.findByIdAndUpdate(id, details, {
+        const updatedEvent = yield quiz_1.QuizEventModel.findByIdAndUpdate(id, { $set: details }, {
             new: true,
         });
         res.success(updatedEvent, 'Event Updated Successfully');
@@ -145,7 +145,7 @@ const updateQuizSeries = (req, res, next) => __awaiter(void 0, void 0, void 0, f
     const { id } = req.params;
     const details = req.body;
     try {
-        const updatedEvent = yield quiz_1.QuizSeriesModel.findByIdAndUpdate(id, details, {
+        const updatedEvent = yield quiz_1.QuizSeriesModel.findByIdAndUpdate(id, { $set: details }, {
             new: true,
         });
         res.success(updatedEvent, 'Series Updated Successfully');

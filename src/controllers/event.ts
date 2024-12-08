@@ -107,9 +107,13 @@ export const updateQuizEvent = async (
   const details = req.body
 
   try {
-    const updatedEvent = await QuizEventModel.findByIdAndUpdate(id, details, {
-      new: true,
-    })
+    const updatedEvent = await QuizEventModel.findByIdAndUpdate(
+      id,
+      { $set: details },
+      {
+        new: true,
+      }
+    )
 
     res.success(updatedEvent, 'Event Updated Successfully')
   } catch (error) {
@@ -188,9 +192,13 @@ export const updateQuizSeries = async (
   const details = req.body
 
   try {
-    const updatedEvent = await QuizSeriesModel.findByIdAndUpdate(id, details, {
-      new: true,
-    })
+    const updatedEvent = await QuizSeriesModel.findByIdAndUpdate(
+      id,
+      { $set: details },
+      {
+        new: true,
+      }
+    )
 
     res.success(updatedEvent, 'Series Updated Successfully')
   } catch (error) {

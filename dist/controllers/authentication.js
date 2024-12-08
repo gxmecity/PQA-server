@@ -123,8 +123,9 @@ const updateTeamInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     const details = req.body;
     try {
         const infoToUpdate = Object.assign(Object.assign({}, details), { team_members: JSON.parse(details.team_members) });
-        const updatedTeam = yield teams_1.TeamModel.findByIdAndUpdate(id, infoToUpdate, {
+        const updatedTeam = yield teams_1.TeamModel.findByIdAndUpdate(id, { $set: infoToUpdate }, {
             new: true,
+            runValidators: true,
         });
         res.success(updatedTeam, 'Team Updated Successfully');
     }
@@ -137,8 +138,9 @@ const updateUser = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     const user_id = req.user_id;
     const details = req.body;
     try {
-        const updatedUser = yield users_1.UserModel.findByIdAndUpdate(user_id, details, {
+        const updatedUser = yield users_1.UserModel.findByIdAndUpdate(user_id, { $set: details }, {
             new: true,
+            runValidators: true,
         });
         res.success(updatedUser, 'Account Updated Succesfully');
     }

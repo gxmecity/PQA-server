@@ -104,9 +104,14 @@ export const updateQuizDetails = async (
   const details = req.body
 
   try {
-    const updatedQuiz = await QuizModel.findByIdAndUpdate(id, details, {
-      new: true,
-    })
+    const updatedQuiz = await QuizModel.findByIdAndUpdate(
+      id,
+      { $set: details },
+      {
+        new: true,
+        runValidators: true,
+      }
+    )
 
     res.success(updatedQuiz, 'Quiz updated successfully')
   } catch (error) {

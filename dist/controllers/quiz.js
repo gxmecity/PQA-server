@@ -87,8 +87,9 @@ const updateQuizDetails = (req, res, next) => __awaiter(void 0, void 0, void 0, 
     const { id } = req.params;
     const details = req.body;
     try {
-        const updatedQuiz = yield quiz_1.QuizModel.findByIdAndUpdate(id, details, {
+        const updatedQuiz = yield quiz_1.QuizModel.findByIdAndUpdate(id, { $set: details }, {
             new: true,
+            runValidators: true,
         });
         res.success(updatedQuiz, 'Quiz updated successfully');
     }
