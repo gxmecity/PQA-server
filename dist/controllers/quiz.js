@@ -34,6 +34,7 @@ const getUsersQuizList = (req, res, next) => __awaiter(void 0, void 0, void 0, f
     try {
         const userQuizList = yield quiz_1.QuizModel.find({ creator: user })
             .populate('creator')
+            .sort({ createdAt: -1 })
             .select('-rounds.questions.answer');
         res.success(userQuizList, 'List of user quizes');
     }

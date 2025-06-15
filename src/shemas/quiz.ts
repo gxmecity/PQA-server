@@ -28,7 +28,7 @@ interface Round {
   timer: number
 }
 
-interface Quiz {
+export interface Quiz {
   description?: string
   creator: Schema.Types.ObjectId
   publish: boolean
