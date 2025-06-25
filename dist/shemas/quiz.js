@@ -28,11 +28,13 @@ const QuestionSchema = new mongoose_1.Schema({
 const RoundSchema = new mongoose_1.Schema({
     round_name: { type: String, required: true },
     round_type: { type: String, required: true },
+    description: { type: [{ title: String, description: String }], default: [] },
     questions: { type: [QuestionSchema], default: [] },
     timer: { type: Number, required: true },
 });
 const QuizSchema = new mongoose_1.Schema({
     description: { type: String },
+    backdropUrl: { type: String },
     creator: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User', required: true },
     publish: { type: Boolean, default: false },
     plays: { type: Number, default: 0 },

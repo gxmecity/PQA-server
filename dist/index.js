@@ -91,23 +91,23 @@ app.get('/api/realtime-auth', (request, response) => __awaiter(void 0, void 0, v
 app.get('/api/check-room-status', function (req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     const quizCode = req.query.quizCode;
-    const deviceType = req.query.playerType;
     try {
         if (!quizCode || typeof quizCode !== 'string')
             throw new errorHandler_1.CustomError('quizCode is required', 400);
-        if (deviceType !== 'host' && deviceType !== 'player')
-            throw new errorHandler_1.CustomError('deviceType must be either "host" or "player"', 400);
         const foundRoom = Object.values(activeQuizRooms).find((room) => {
-            return deviceType === 'host'
-                ? room.hostRoomCode === quizCode
-                : room.roomCode === quizCode;
+            return room.hostRoomCode === quizCode || room.roomCode === quizCode;
         });
         if (!foundRoom)
             throw new errorHandler_1.CustomError('Room not found', 404);
         if (!foundRoom.isRoomActive)
             throw new errorHandler_1.CustomError('Quiz Room not open', 400);
+        console.log(foundRoom);
         res.success({
-            isRoomActive: foundRoom.isRoomActive,
+            entryCode: foundRoom.roomCode,
+            totalPlayers: foundRoom.totalPlayers,
+            isHost: foundRoom.hostRoomCode === quizCode,
+            creator: foundRoom.host,
+            eventMode: foundRoom.eventType,
         }, 'Quiz Room Found');
     }
     catch (error) {
@@ -134,17 +134,20 @@ const createNewQuizRoom = (roomCode, hostRoomCode, quizId, eventType, hostClient
             quizId,
             eventType,
             quiz: quiz || null,
+            creatorId: quiz.creator.toString() || null,
         },
     });
     console.log(`CREATED NEW WORKER WITH ID ${worker.threadId}`);
     worker.on('message', (msg) => {
         if (msg.roomCode && !msg.killWorker) {
             activeQuizRooms[msg.roomCode] = {
-                roomCode: msg.playerRoomCode,
+                roomCode: msg.roomCode,
                 hostRoomCode: msg.hostRoomCode,
                 quizId: msg.quizId,
                 totalPlayers: msg.totalPlayers,
                 isRoomActive: msg.isRoomActive,
+                host: msg.quizHost,
+                eventType: msg.eventType,
             };
             totalPlayersThroughout += msg.totalPlayers;
         }
