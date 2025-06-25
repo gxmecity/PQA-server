@@ -7,7 +7,7 @@ exports.dbConnect = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const dbConnect = () => {
     try {
-        const connect = mongoose_1.default.connect(process.env.MONGODB_URL);
+        mongoose_1.default.connect(process.env.MONGODB_URL);
         console.log('Database connected');
     }
     catch (error) {

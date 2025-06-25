@@ -1,19 +1,37 @@
-import express, { Response, Request } from 'express'
+import express, { Response, Request, NextFunction } from 'express'
 import http from 'http'
 import bodyParser from 'body-parser'
 import compression from 'compression'
 import cors from 'cors'
 import router from './routes'
 import dotenv from 'dotenv'
-import ErrorHandler from './middlewares/errorHandler'
+import ErrorHandler, { CustomError } from './middlewares/errorHandler'
 import successHandler from './middlewares/successHandler'
 import { dbConnect } from './config/dbConect'
 import { uniqueId } from './helpers'
 import { Realtime } from 'ably'
+import { Worker, isMainThread } from 'node:worker_threads'
+import { QuizModel } from './shemas/quiz'
 dotenv.config()
+
+const globalQuizChName = 'tpq-main-quiz-thread'
+let globalQuizChannel
+const activeQuizRooms: {
+  [key: string]: {
+    roomCode: string
+    hostRoomCode?: string
+    quizId: string
+    totalPlayers: number
+    isRoomActive: boolean
+    eventType: string
+    host: string
+  }
+} = {}
+let totalPlayersThroughout = 0
 
 const realtime = new Realtime({
   key: process.env.ABLY_API_KEY,
+  echoMessages: false,
 })
 
 const app = express()
@@ -60,4 +78,118 @@ app.get('/api/realtime-auth', async (request, response) => {
   }
 })
 
+app.get(
+  '/api/check-room-status',
+  function (req: Request, res: Response, next: NextFunction) {
+    res.setHeader('Access-Control-Allow-Origin', '*')
+    const quizCode = req.query.quizCode
+    try {
+      if (!quizCode || typeof quizCode !== 'string')
+        throw new CustomError('quizCode is required', 400)
+
+      const foundRoom = Object.values(activeQuizRooms).find((room) => {
+        return room.hostRoomCode === quizCode || room.roomCode === quizCode
+      })
+
+      if (!foundRoom) throw new CustomError('Room not found', 404)
+
+      if (!foundRoom.isRoomActive)
+        throw new CustomError('Quiz Room not open', 400)
+
+      console.log(foundRoom)
+
+      res.success(
+        {
+          entryCode: foundRoom.roomCode,
+          totalPlayers: foundRoom.totalPlayers,
+          isHost: foundRoom.hostRoomCode === quizCode,
+          creator: foundRoom.host,
+          eventMode: foundRoom.eventType,
+        },
+        'Quiz Room Found'
+      )
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
 app.use(ErrorHandler)
+
+realtime.connection.once('connected', () => {
+  console.log('Ably Realtime connected')
+  globalQuizChannel = realtime.channels.get(globalQuizChName)
+
+  globalQuizChannel.presence.subscribe('enter', (player) => {
+    createNewQuizRoom(
+      player.data.roomCode,
+      player.data.hostCode,
+      player.data.quizId,
+      player.data.eventType,
+      player.clientId
+    )
+  })
+})
+
+const createNewQuizRoom = async (
+  roomCode: string,
+  hostRoomCode: string,
+  quizId: string,
+  eventType: string,
+  hostClientId: string
+) => {
+  if (!isMainThread) return
+
+  const quiz = await QuizModel.findById(quizId).lean()
+
+  const worker = new Worker('./src/lib/quiz-room-server.js', {
+    workerData: {
+      roomCode,
+      hostRoomCode,
+      hostClientId,
+      quizId,
+      eventType,
+      quiz: quiz || null,
+      creatorId: quiz.creator.toString() || null,
+    },
+  })
+
+  console.log(`CREATED NEW WORKER WITH ID ${worker.threadId}`)
+
+  worker.on('message', (msg) => {
+    if (msg.roomCode && !msg.killWorker) {
+      activeQuizRooms[msg.roomCode] = {
+        roomCode: msg.roomCode,
+        hostRoomCode: msg.hostRoomCode,
+        quizId: msg.quizId,
+        totalPlayers: msg.totalPlayers,
+        isRoomActive: msg.isRoomActive,
+        host: msg.quizHost,
+        eventType: msg.eventType,
+      }
+      totalPlayersThroughout += msg.totalPlayers
+    } else if (msg.roomCode && msg.killWorker) {
+      totalPlayersThroughout -= msg.totalPlayers
+      delete activeQuizRooms[msg.roomCode]
+    } else if (msg.roomCode) {
+      activeQuizRooms[msg.roomCode].isRoomActive = msg.isRoomActive
+      console.log('Room open for', msg.roomCode)
+    }
+
+    console.log(msg)
+  })
+
+  worker.on('error', (error) => {
+    console.error(`Worker error [${worker.threadId}]:`, error)
+  })
+
+  worker.on('exit', (code) => {
+    if (code !== 0) {
+      console.error(
+        `Worker [${worker.threadId}] exited with error code ${code}`
+      )
+    } else {
+      console.log(`Worker [${worker.threadId}] exited cleanly`)
+    }
+  })
+}

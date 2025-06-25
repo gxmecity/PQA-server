@@ -31,6 +31,7 @@ export const getUsersQuizList = async (
   try {
     const userQuizList = await QuizModel.find({ creator: user })
       .populate('creator')
+      .sort({ createdAt: -1 })
       .select('-rounds.questions.answer')
 
     res.success(userQuizList, 'List of user quizes')

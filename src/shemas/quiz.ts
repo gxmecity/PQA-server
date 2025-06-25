@@ -21,19 +21,26 @@ interface QuizQuestion {
   answer: Answer
 }
 
+interface RoundDescription {
+  title: string
+  description?: string
+}
+
 interface Round {
   round_name: string
   round_type: string
+  description?: RoundDescription[]
   questions: QuizQuestion[]
   timer: number
 }
 
-interface Quiz {
+export interface Quiz {
   description?: string
   creator: Schema.Types.ObjectId
   publish: boolean
   plays: number
   title: string
+  backdropUrl?: string
   rounds: Round[]
 }
 
@@ -93,6 +100,7 @@ const QuestionSchema: Schema<QuizQuestion> = new Schema({
 const RoundSchema: Schema<Round> = new Schema({
   round_name: { type: String, required: true },
   round_type: { type: String, required: true },
+  description: { type: [{ title: String, description: String }], default: [] },
   questions: { type: [QuestionSchema], default: [] },
   timer: { type: Number, required: true },
 })
@@ -100,6 +108,7 @@ const RoundSchema: Schema<Round> = new Schema({
 const QuizSchema: Schema<Quiz> = new Schema(
   {
     description: { type: String },
+    backdropUrl: { type: String },
     creator: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     publish: { type: Boolean, default: false },
     plays: { type: Number, default: 0 },
