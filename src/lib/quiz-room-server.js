@@ -182,9 +182,9 @@ function subscribeToHostEvents() {
       await publishTimer('countdown-timer', START_TIMER_SEC)
       await publishQuestion(index)
 
-      if (quiz.rounds[ACTIVE_ROUND].round_type === 'dealers_choice') {
-        roomChannel.publish('allow-buzzer', { buzzer: true })
-      }
+      // if (quiz.rounds[ACTIVE_ROUND].round_type === 'dealers_choice') {
+      //   roomChannel.publish('allow-buzzer', { buzzer: true })
+      // }
     }
   })
 
@@ -245,7 +245,7 @@ function subscribeToHostEvents() {
   })
 
   hostChannel.subscribe('allow-buzzer', () => {
-    roomChannel.publish('allow-buzzer')
+    roomChannel.publish('allow-buzzer', { buzzer: true })
   })
 
   hostChannel.subscribe('final-results', async () => {
@@ -280,36 +280,55 @@ async function publishQuestion(index, isLast = false) {
 
 function handleNewPlayerJoined(player) {
   const playerGameId = player.data.gameId
+  console.log(player.data)
 
-  if (globalPlayersState[playerGameId]) return
-
-  totalPlayers++
-  postMessage({
-    roomCode,
-    hostRoomCode,
-    totalPlayers,
-    quizId,
-    isRoomActive: true,
-  })
+  if (!globalPlayersState[playerGameId]) {
+    totalPlayers++
+    parentPort.postMessage({
+      roomCode,
+      hostRoomCode,
+      totalPlayers,
+      quizId,
+      isRoomActive: true,
+    })
+  }
 
   const playerState = {
     gameId: playerGameId,
     clientId: player.clientId,
     name: player.data.name,
-    avatar_url: player.data.avatar,
+    avatar_url: player.data.avatar_url,
     player_id: player.data.player_id,
-    score: 0,
+    score: globalPlayersState[playerGameId]?.score || 0,
+    status: 'online',
   }
 
-  playerChannels[playerGameId] = realtime.channels.get(
-    `${roomCode}:player-ch-${playerGameId}`
+  playerChannels[player.playerGameId] = realtime.channels.get(
+    `${roomCode}:player-ch-${player.clientId}`
   )
 
   globalPlayersState[playerGameId] = playerState
   roomChannel.publish('new-player', { player: playerState })
 
-  subscribeToPlayerChannels(playerChannels[playerGameId], playerGameId)
+  subscribeToPlayerChannels(playerChannels[player.playerGameId], playerGameId)
   if (QUIZ_STARTED) {
+    const currentRound = quiz.rounds[ACTIVE_ROUND]
+    const question =
+      ROUND_STARTED && ACTIVE_QUESTION_INDEX !== null
+        ? currentRound.questions[ACTIVE_QUESTION_INDEX]
+        : null
+
+    const round = getRoundMetadata(ACTIVE_ROUND).round
+
+    const baseState = {
+      quiz_started: true,
+      question: question,
+      round,
+    }
+
+    playerChannels[player.playerGameId].publish('sync-state', {
+      state: baseState,
+    })
     //update player with current gameState
   }
 }
@@ -345,8 +364,9 @@ function subscribeToPlayerChannels(playerChannel, playerId) {
   playerChannel.subscribe('request-bonus', (msg) => {
     roomChannel.publish('bonus-request', {
       player: {
-        gameId: msg.clientId,
-        name: msg.data.name,
+        gameId: playerId,
+        name: globalPlayersState[playerId].name,
+        avatar_url: globalPlayersState[playerId].avatar_url,
       },
     })
   })

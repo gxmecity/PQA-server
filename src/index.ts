@@ -96,8 +96,6 @@ app.get(
       if (!foundRoom.isRoomActive)
         throw new CustomError('Quiz Room not open', 400)
 
-      console.log(foundRoom)
-
       res.success(
         {
           entryCode: foundRoom.roomCode,
@@ -173,10 +171,7 @@ const createNewQuizRoom = async (
       delete activeQuizRooms[msg.roomCode]
     } else if (msg.roomCode) {
       activeQuizRooms[msg.roomCode].isRoomActive = msg.isRoomActive
-      console.log('Room open for', msg.roomCode)
     }
-
-    console.log(msg)
   })
 
   worker.on('error', (error) => {
