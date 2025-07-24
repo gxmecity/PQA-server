@@ -101,7 +101,6 @@ app.get('/api/check-room-status', function (req, res, next) {
             throw new errorHandler_1.CustomError('Room not found', 404);
         if (!foundRoom.isRoomActive)
             throw new errorHandler_1.CustomError('Quiz Room not open', 400);
-        console.log(foundRoom);
         res.success({
             entryCode: foundRoom.roomCode,
             totalPlayers: foundRoom.totalPlayers,
@@ -157,9 +156,7 @@ const createNewQuizRoom = (roomCode, hostRoomCode, quizId, eventType, hostClient
         }
         else if (msg.roomCode) {
             activeQuizRooms[msg.roomCode].isRoomActive = msg.isRoomActive;
-            console.log('Room open for', msg.roomCode);
         }
-        console.log(msg);
     });
     worker.on('error', (error) => {
         console.error(`Worker error [${worker.threadId}]:`, error);
